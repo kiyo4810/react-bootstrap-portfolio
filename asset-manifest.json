@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/react-bootstrap-portfolio/static/css/main.2b3cc612.css",
-    "main.js": "/react-bootstrap-portfolio/static/js/main.71e222c3.js",
+    "main.js": "/react-bootstrap-portfolio/static/js/main.31a7645f.js",
     "static/media/kiyo.png": "/react-bootstrap-portfolio/static/media/kiyo.e2a3ec178dacb58f4dbd.png",
     "static/media/react.png": "/react-bootstrap-portfolio/static/media/react.5be46e1d4c29661f3347.png",
     "index.html": "/react-bootstrap-portfolio/index.html",
     "main.2b3cc612.css.map": "/react-bootstrap-portfolio/static/css/main.2b3cc612.css.map",
-    "main.71e222c3.js.map": "/react-bootstrap-portfolio/static/js/main.71e222c3.js.map"
+    "main.31a7645f.js.map": "/react-bootstrap-portfolio/static/js/main.31a7645f.js.map"
   },
   "entrypoints": [
     "static/css/main.2b3cc612.css",
-    "static/js/main.71e222c3.js"
+    "static/js/main.31a7645f.js"
   ]
 }
