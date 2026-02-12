@@ -17,7 +17,7 @@ const Header = () => {
             <Link to="blog">ブログ</Link>
           </li>
           <li>
-            <Link to="#">SNS</Link>
+            <Link to="Sns">SNS</Link>
           </li>
         </ul>
       </nav>
