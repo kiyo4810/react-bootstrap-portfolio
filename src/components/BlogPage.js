@@ -1,23 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 
 const BlogPage = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://catgomapan.com/wp-json/wp/v2/posts?_embed&per_page=3")
+      .then((response) => response.json())
+      .then((data) => {
+        setPosts(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <Container className="text-center" style={{ marginTop: "100px" }}>
+        <Spinner animation="border" variant="primary" />
+        <p>読み込み中...</p>
+      </Container>
+    );
+  }
+
   return (
-    <div className="container">
-      <h1>ブログ</h1>
-      <p>
-        React & VS Code 学習のダミーテキスト
-        エディット・コンポーネントの最適化は、常にclassNameの定義から始まります。ダミーのdivタグを生成し、Emmetの力を借りて爆速でマークアップを進めましょう。Viewport
-        Heightの概念を理解することは、レスポンシブなヒーローエリアを構築する第一歩です。100vhの魔法にかかれば、どんなデバイスでも画面いっぱいの感動を届けることができますが、スクロールバーの挙動には細心の注意が必要です。
-        ターミナルに表示されるzshとnodeの境界線を見極めてください。npmインストールの背後に潜む脆弱性は、成長の証であるauditコマンドで優しく包み込みます。react-router-domによるルーティングの旅は、単一ページアプリケーションに命を吹き込み、ユーザーを未知のコンポーネントへと誘います。
-        JSXの記述においてclassとclassNameの葛藤を乗り越えたあなたは、もはやJavaScriptの予約語を恐れることはありません。親要素の幅に寄り添う100%の謙虚さと、画面全体を支配するvwの力強さを使い分け、ブラウザというキャンバスに最高のポートフォリオを描き上げましょう。デバッグの荒波を越えた先には、クリーンなコンソールと洗練されたUIが待っています。
-      </p>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum consequuntur, doloremque harum impedit illo eligendi, hic explicabo, nihil aut quia vero tempora deserunt. Ullam perferendis ex
-        officia. Aliquam nulla ratione voluptatum modi odit fugiat quia? Distinctio repudiandae cum exercitationem hic, veniam modi sequi et dolorum facere facilis error iusto ipsa odit, explicabo,
-        provident pariatur similique? Esse beatae vero exercitationem ratione eaque fugiat ut minus suscipit magnam. Corrupti velit non aperiam mollitia voluptatibus quaerat quos, natus debitis ut
-        optio. Suscipit unde eligendi tenetur, dolores magni ut voluptate officia nesciunt nostrum architecto, similique molestias. In tempore hic exercitationem, debitis sequi quod quisquam.
-      </p>
-    </div>
+    // 修正前: <Container style={{ marginTop: "100px", paddingBottom: "50px" }}>
+    // 修正後:
+    <Container style={{ paddingTop: "120px", paddingBottom: "50px" }}>
+      <h1 className="mb-5 text-center fw-bold">最新のブログ記事</h1>
+      <Row>
+        {posts.map((post) => (
+          <Col md={4} key={post.id} className="mb-4">
+            <Card className="h-100 shadow-sm border-0">
+              {/* 画像のコンテナに aspect-ratio を指定するとより確実です */}
+              <div style={{ width: "100%", aspectRatio: "16 / 9", overflow: "hidden" }}>
+                {post._embedded && post._embedded["wp:featuredmedia"] ? (
+                  <Card.Img variant="top" src={post._embedded["wp:featuredmedia"][0].source_url} alt={post.title.rendered} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", background: "#eee" }} />
+                )}
+              </div>
+
+              <Card.Body className="d-flex flex-column">
+                <Card.Title className="fs-5 fw-bold" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+                <Card.Text className="text-muted small flex-grow-1" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.substring(0, 100) + "..." }} />
+                <a href={post.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm mt-3">
+                  記事を読む
+                </a>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 };
 

@@ -10,7 +10,7 @@ const HomePage = () => {
     <div className="container text-center">
       <h1>👨‍💻 About Me: きよ (Kiyo)</h1>
 
-      <img src={profileImage} className="profileImage" />
+      <img src={profileImage} alt="きよです。おじです。" className="profileImage" />
 
       <section className="about-section py-5 bg-light">
         <div className="main">
@@ -112,17 +112,17 @@ const HomePage = () => {
           <h1 class="title">スキル</h1>
           <div class="row text-center">
             <div class="col-md-4 services">
-              <img src={reactImage} />
+              <img src={reactImage} alt="Reactのロゴ" />
               <h4>React</h4>
               <p>Reactがつかえます</p>
             </div>
             <div class="col-md-4 services">
-              <img src={jsImage} />
+              <img src={jsImage} alt="JavaScriptのロゴ" />
               <h4>HTML/CSS</h4>
               <p>HTML/CSSがつかえます</p>
             </div>
             <div class="col-md-4 services">
-              <img src={firebaseImage} />
+              <img src={firebaseImage} alt="Firebaseのロゴ" />
               <h4>Firebase</h4>
               <p>Firebaseがつかえます</p>
             </div>
