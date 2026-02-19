@@ -4,6 +4,7 @@ import reactImage from "../Images/react.png";
 import jsImage from "../Images/js.png";
 import firebaseImage from "../Images/firebase.jpg";
 import profileImage from "../Images/kiyo.png";
+import LinkExplorer from "./LinkExplorer"; // 1. これを追加
 
 const HomePage = () => {
   return (
@@ -77,6 +78,9 @@ const HomePage = () => {
           <div class="text-center">
             <h2 class="section-heading text-uppercase">PORTFOLIO</h2>
             <h3 class="section-subheading text-muted mb-5">私が作った作品一覧です</h3>
+          </div>
+          <div className="portfolio-links">
+            <LinkExplorer /> {/* 2. これでリンク集が表示されます */}
           </div>
           <div class="row text-center">
             <div class="col-md-4">
