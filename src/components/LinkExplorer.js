@@ -16,56 +16,73 @@ const LinkExplorer = () => {
     let mainIndex = 1;
 
     while (true) {
-      const mainNum = `${mainIndex}`; // "1", "2"...
+      const mainNum = `${mainIndex}`;
       const mainFilename = `index${mainNum}.html`;
 
-      // メイン番号のNGチェック
       if (!ngPages.includes(mainNum)) {
         const mainUrl = `${baseUrl}${mainFilename}`;
-        const mainTitle = await fetchTitle(mainUrl);
+        // 改修ポイント：戻り値をオブジェクトに変更
+        const pageData = await fetchPageData(mainUrl);
 
-        if (!mainTitle) break;
-        allFoundLinks.push({ url: mainUrl, title: mainTitle });
+        if (!pageData) break;
+        allFoundLinks.push({ url: mainUrl, ...pageData });
       } else {
-        // NGリストに入っていても、その先に枝番があるかもしれないので
-        // 存在確認だけはして、ループを止めるか続行するか判断します
-        const checkExists = await fetchTitle(`${baseUrl}${mainFilename}`);
+        const checkExists = await fetchPageData(`${baseUrl}${mainFilename}`);
         if (!checkExists) break;
       }
 
-      // 2. 枝番 (indexN-M.html) の探索
       let subIndex = 1;
       while (true) {
-        const subNum = `${mainIndex}-${subIndex}`; // "1-1", "1-2"...
-        const subFilename = `index${subNum}.html`;
+        const subNum = `${mainIndex}-${subIndex}`;
+        const subUrl = `${baseUrl}index${subNum}.html`;
+        const subData = await fetchPageData(subUrl);
 
-        // 枝番のNGチェック
+        if (!subData) break;
+
         if (!ngPages.includes(subNum)) {
-          const subUrl = `${baseUrl}${subFilename}`;
-          const subTitle = await fetchTitle(subUrl);
-          if (!subTitle) break;
-          allFoundLinks.push({ url: subUrl, title: subTitle });
-        } else {
-          // NGの場合もファイルが存在するかだけ確認（次の枝番があるかもしれないので）
-          const checkExists = await fetchTitle(`${baseUrl}${subFilename}`);
-          if (!checkExists) break;
+          allFoundLinks.push({ url: subUrl, ...subData });
         }
         subIndex++;
       }
-
       mainIndex++;
       setLinks([...allFoundLinks]);
     }
     setIsScanning(false);
   };
 
-  const fetchTitle = async (url) => {
+  // 関数名を fetchPageData に変更して日付も取るように
+  const fetchPageData = async (url) => {
     try {
       const response = await fetch(url);
       if (!response.ok) return null;
+
+      // --- 📅 改修ポイント：GitHub APIからコミット日時を取得 ---
+      // 例: https://kiyo4810.github.io/autocal/html_ver/index1.html
+      // から GitHubのリポジトリパスを取得してAPIを叩きます
+      const fileName = url.split("/").pop();
+      const apiTarget = `https://api.github.com/repos/kiyo4810/autocal/commits?path=html_ver/${fileName}&page=1&per_page=1`;
+
+      let dateStr = "不明";
+      try {
+        const apiRes = await fetch(apiTarget);
+        if (apiRes.ok) {
+          const commits = await apiRes.json();
+          if (commits.length > 0) {
+            // 最新のコミット日時を取得
+            const commitDate = commits[0].commit.committer.date;
+            dateStr = new Date(commitDate).toLocaleDateString();
+          }
+        }
+      } catch (e) {
+        console.error("GitHub API Error:", e);
+      }
+      // ---------------------------------------------------
+
       const text = await response.text();
       const doc = new DOMParser().parseFromString(text, "text/html");
-      return doc.querySelector("title")?.innerText || "タイトルなし";
+      const title = doc.querySelector("title")?.innerText || "タイトルなし";
+
+      return { title, date: dateStr };
     } catch {
       return null;
     }
@@ -83,8 +100,10 @@ const LinkExplorer = () => {
       <div className="list-group">
         {links.map((link, idx) => (
           <a key={idx} href={link.url} target="_blank" rel="noreferrer" className="list-group-item list-group-item-action mb-2 shadow-sm rounded">
-            <div className="d-flex w-100 justify-content-between">
+            <div className="d-flex w-100 justify-content-between align-items-center">
               <h6 className="mb-1">{link.title}</h6>
+              {/* 🕒 日付を表示 */}
+              <span className="badge bg-secondary-subtle text-secondary fw-normal">更新: {link.date}</span>
             </div>
             <small className="text-muted">{link.url.split("/").pop()}</small>
           </a>
